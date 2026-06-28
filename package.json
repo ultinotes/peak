@@ -1,0 +1,114 @@
+{
+  "name": "peak",
+  "displayName": "Peak",
+  "description": "Peak understanding of your code via visual control flow and dependency graphs ",
+  "version": "0.0.1",
+  "publisher": "peak",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ultinotes/peak.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ultinotes/peak/issues"
+  },
+  "engines": {
+    "vscode": "^1.104.0"
+  },
+  "categories": [
+    "Visualization",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "call graph",
+    "call hierarchy",
+    "code visualization",
+    "dependency graph",
+    "code navigation",
+    "mermaid",
+    "architecture",
+    "references",
+    "imports",
+    "code diagram",
+    "LSP",
+    "understand code",
+    "visualization",
+    "developer tools"
+  ],
+  "preview": true,
+  "activationEvents": [
+    "onCommand:peak.understand"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "peak.understand",
+        "title": "Peak understand"
+      }
+    ],
+    "configuration": {
+      "title": "Peak",
+      "properties": {
+        "peak.updateOnCursorMove": {
+          "type": "boolean",
+          "default": true,
+          "description": "Reload the Peak panel when the cursor moves while the panel is open."
+        },
+        "peak.definitionPreviewPlacement": {
+          "type": "string",
+          "enum": [
+            "right",
+            "bottom"
+          ],
+          "default": "right",
+          "description": "Where the definition snippet sits relative to the diagram inside the Peak panel."
+        }
+      }
+    },
+    "menus": {
+      "editor/context": [
+        {
+          "command": "peak.understand",
+          "when": "editorTextFocus",
+          "group": "navigation@99"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && npm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "dependencies": {
+    "lucide": "^1.21.0",
+    "mermaid": "^11.12.3"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.104.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "24.x",
+    "typescript-eslint": "^8.61.1",
+    "eslint": "^10.5.0",
+    "esbuild": "^0.28.1",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^6.0.3",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.0.0",
+    "generator-code": "^1.12.0"
+  },
+  "overrides": {
+    "diff": "^8.0.4",
+    "serialize-javascript": "^7.0.6"
+  }
+}
