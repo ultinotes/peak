@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "preact/hooks";
+import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import { TabBar } from "./components/TabBar";
 import { ActionBar } from "./components/ActionBar";
 import { DiagramViewport } from "./components/DiagramViewport";
@@ -43,20 +43,25 @@ export function App() {
 	const hasDiagram = Boolean(activeTab?.mermaid.trim());
 	const definitionVisible = Boolean(activeTab?.definitionSnippet);
 
-	const persistState = useCallback(() => {
-		persistWebviewState({ splitRatio, definitionPreviewPlacement: definitionPlacement });
-	}, [splitRatio, definitionPlacement]);
+	const definitionPlacementRef = useRef(definitionPlacement);
+	definitionPlacementRef.current = definitionPlacement;
+	const definitionVisibleRef = useRef(definitionVisible);
+	definitionVisibleRef.current = definitionVisible;
 
 	useEffect(() => {
 		const controller = setupSplitter({
-			getPlacement: () => definitionPlacement,
-			getSplitRatio: () => splitRatio,
-			setSplitRatio,
-			isDefinitionVisible: () => definitionVisible,
-			onPersist: persistState,
+			getPlacement: () => definitionPlacementRef.current,
+			isDefinitionVisible: () => definitionVisibleRef.current,
+			onSplitRatioCommit: (ratio) => {
+				setSplitRatio(ratio);
+				persistWebviewState({
+					splitRatio: ratio,
+					definitionPreviewPlacement: definitionPlacementRef.current,
+				});
+			},
 		});
 		return () => controller.dispose();
-	}, [definitionPlacement, splitRatio, definitionVisible, persistState]);
+	}, []);
 
 	useEffect(() => {
 		applySplitSizes(definitionPlacement, splitRatio, definitionVisible);

@@ -3,6 +3,11 @@ import type { DefinitionPreviewPlacement } from "../../shared/webviewProtocol";
 export const MIN_PANEL_PX = 120;
 export const DEFAULT_SPLIT_RATIO = 0.5;
 
+function clampSplitRatio(ratio: number, total: number): number {
+	const minRatio = MIN_PANEL_PX / total;
+	return Math.max(minRatio, Math.min(1 - minRatio, ratio));
+}
+
 export function applySplitSizes(
 	placement: DefinitionPreviewPlacement,
 	splitRatio: number,
@@ -47,10 +52,8 @@ export interface SplitterController {
 
 export function setupSplitter(options: {
 	getPlacement: () => DefinitionPreviewPlacement;
-	getSplitRatio: () => number;
-	setSplitRatio: (ratio: number) => void;
 	isDefinitionVisible: () => boolean;
-	onPersist: () => void;
+	onSplitRatioCommit: (ratio: number) => void;
 }): SplitterController {
 	const splitter = document.getElementById("splitter");
 	const main = document.getElementById("main");
@@ -59,45 +62,30 @@ export function setupSplitter(options: {
 	}
 
 	let dragging = false;
+	let dragRatio: number | undefined;
 
 	const onSplitterMouseDown = (event: MouseEvent): void => {
 		if (!options.isDefinitionVisible()) {
 			return;
 		}
 		dragging = true;
+		dragRatio = undefined;
 		event.preventDefault();
 	};
 
 	const onMouseMove = (event: MouseEvent): void => {
-		if (!dragging) {
+		if (!dragging || !options.isDefinitionVisible()) {
 			return;
 		}
 		const mainRect = main.getBoundingClientRect();
 		const isRight = options.getPlacement() === "right";
-		if (isRight) {
-			const defWidth = mainRect.right - event.clientX;
-			const ratio = defWidth / mainRect.width;
-			options.setSplitRatio(
-				Math.max(
-					MIN_PANEL_PX / mainRect.width,
-					Math.min(1 - MIN_PANEL_PX / mainRect.width, ratio),
-				),
-			);
-		} else {
-			const defHeight = mainRect.bottom - event.clientY;
-			const ratio = defHeight / mainRect.height;
-			options.setSplitRatio(
-			 Math.max(
-					MIN_PANEL_PX / mainRect.height,
-					Math.min(1 - MIN_PANEL_PX / mainRect.height, ratio),
-				),
-			);
-		}
-		applySplitSizes(
-			options.getPlacement(),
-			options.getSplitRatio(),
-			options.isDefinitionVisible(),
-		);
+		const total = isRight ? mainRect.width : mainRect.height;
+		const rawRatio = isRight
+			? (mainRect.right - event.clientX) / mainRect.width
+			: (mainRect.bottom - event.clientY) / mainRect.height;
+		const ratio = clampSplitRatio(rawRatio, total);
+		dragRatio = ratio;
+		applySplitSizes(options.getPlacement(), ratio, true);
 	};
 
 	const onMouseUp = (): void => {
@@ -105,7 +93,10 @@ export function setupSplitter(options: {
 			return;
 		}
 		dragging = false;
-		options.onPersist();
+		if (dragRatio !== undefined) {
+			options.onSplitRatioCommit(dragRatio);
+		}
+		dragRatio = undefined;
 	};
 
 	splitter.addEventListener("mousedown", onSplitterMouseDown);
