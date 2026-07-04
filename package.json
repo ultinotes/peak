@@ -84,12 +84,16 @@
     "watch:esbuild": "node esbuild.js --watch",
     "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
     "package": "npm run check-types && npm run lint && node esbuild.js --production",
-    "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "compile-unit-tests": "tsc -p tsconfig.unit-test.json && tsc -p tsconfig.webview-unit-test.json",
+    "compile-integration-tests": "tsc -p tsconfig.integration-test.json",
+    "watch-unit-tests": "npm-run-all -p watch:unit-tests:*",
+    "watch:unit-tests:ext": "tsc -p tsconfig.unit-test.json -w --outDir out",
+    "watch:unit-tests:webview": "tsc -p tsconfig.webview-unit-test.json -w",
+    "test:unit": "npm run compile-unit-tests && npm run compile && npm run lint && mocha 'out/**/*.unit.test.js' --ui tdd",
+    "test:integration": "npm run compile-integration-tests && npm run compile && vscode-test --config .vscode-test.integration.mjs",
     "check-types": "tsc --noEmit",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "npm run test:unit"
   },
   "dependencies": {
     "lucide": "^1.21.0",
@@ -107,7 +111,8 @@
     "typescript": "^6.0.3",
     "@vscode/test-cli": "^0.0.15",
     "@vscode/test-electron": "^3.0.0",
-    "generator-code": "^1.12.0"
+    "generator-code": "^1.12.0",
+    "mocha": "^11.7.6"
   },
   "overrides": {
     "diff": "^8.0.4",

@@ -50,20 +50,21 @@
         },
 		{
 			"type": "npm",
-			"script": "watch-tests",
+			"script": "watch-unit-tests",
 			"problemMatcher": "$tsc-watch",
 			"isBackground": true,
 			"presentation": {
 				"reveal": "never",
 				"group": "watchers"
 			},
-			"group": "build"
+			"group": "build",
+			"label": "npm: watch-unit-tests"
 		},
 		{
-			"label": "tasks: watch-tests",
+			"label": "tasks: watch-unit-tests",
 			"dependsOn": [
 				"npm: watch",
-				"npm: watch-tests"
+				"npm: watch-unit-tests"
 			],
 			"problemMatcher": []
 		}

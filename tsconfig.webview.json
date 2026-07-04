@@ -10,5 +10,6 @@
 		"skipLibCheck": true,
 		"noEmit": true
 	},
-	"include": ["src/webview/**/*", "src/shared/**/*"]
+	"include": ["src/webview/**/*", "src/shared/**/*"],
+	"exclude": ["src/webview/**/*.unit.test.ts", "src/webview/**/*.integration.test.ts"]
 }

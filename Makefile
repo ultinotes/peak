@@ -22,9 +22,14 @@ watch: ## Watch and compile TypeScript
 	npm run watch
 
 .PHONY: test
-test: ## Run unit tests
+test: ## Run unit tests (Node + mocha; NixOS-friendly)
 	@test -f package.json || (echo "Run yo code first — no package.json yet." && exit 1)
-	npm test
+	npm run test:unit
+
+.PHONY: test-integration
+test-integration: ## Run extension integration smoke test (requires VS Code / Electron)
+	@test -f package.json || (echo "Run yo code first — no package.json yet." && exit 1)
+	npm run test:integration
 
 .PHONY: lint
 lint: ## Run lint / type checks

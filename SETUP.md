@@ -30,7 +30,8 @@ Dev tooling: Nix flakes + direnv + Make + Bun for `yo code` scaffold. See `flake
 | `make compile` | Build extension to `dist/` |
 | `make dev` | Launch Extension Development Host with Peak loaded |
 | `make watch` | Watch and recompile TypeScript |
-| `make test` | Unit tests (see NixOS note below) |
+| `make test` | Unit tests — mocha, Node ([ADR-0009](../../docs/adr/0009-peak-testing-strategy.md)) |
+| `make test-integration` | Extension integration smoke — requires VS Code / Electron |
 | `make lint` | Lint / typecheck |
 | `make package` | Build `.vsix` |
 
@@ -100,9 +101,11 @@ In the **dev host window** (not your main editor):
 | No **Peak understand** command | Using main Cursor window instead of dev host |
 | Command missing in dev host too | Compile failed, or Peak not under `@development` |
 | Empty diagrams / warnings | Language server lacks call hierarchy or definition providers for that file |
-| `make test` fails on NixOS | `@vscode/test-electron` downloads a generic Linux VS Code binary that NixOS cannot run; use `make dev` for manual testing, or set `VSCODE_EXECUTABLE_PATH` to a nixpkgs `vscode` |
+| `make test` fails on NixOS | Should not happen for unit tests (`make test`). If `make test-integration` fails with `Cannot run dynamically linked executable`, set `VSCODE_EXECUTABLE_PATH` to nixpkgs `code` or skip integration locally |
 
 ## NixOS notes
 
 - **Extension dev:** use `make dev` or F5 as above.
-- **Unit tests:** `make test` may fail with `Cannot run dynamically linked executable` for the downloaded VS Code test binary. Run domain tests with `npm run compile-tests && npx mocha out/test/mermaidDiagrams.test.js --ui tdd`, or point `VSCODE_EXECUTABLE_PATH` at nixpkgs `vscode` before `make test`.
+- **Unit tests:** `make test` — Node + mocha only; no Electron.
+- **Integration smoke:** `make test-integration` — may need `export VSCODE_EXECUTABLE_PATH=$(which code)` (or `codium`).
+- **System / UX smoke:** manual dev host + [publish-alpha checklist](../../docs/checklists/publish-alpha.md).

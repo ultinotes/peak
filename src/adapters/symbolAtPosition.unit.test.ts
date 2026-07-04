@@ -1,6 +1,6 @@
 import * as assert from "assert";
-import type { DocumentSymbolDto } from "../adapters/ports";
-import { enclosingSymbolPath } from "../adapters/symbolAtPosition";
+import type { DocumentSymbolDto } from "./ports";
+import { enclosingSymbolPath } from "./symbolAtPosition";
 
 function sym(
 	name: string,

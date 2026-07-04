@@ -1,10 +1,26 @@
+import type { NamespacePath } from "../domain/symbol";
 import type { CursorContext, LanguageCommandsPort } from "./ports";
-import { namespaceForUriString } from "./namespacePath";
 import { enclosingSymbolPath } from "./symbolAtPosition";
 
+export type NamespaceForUri = (uri: string) => NamespacePath;
+
+let defaultNamespaceForUri: NamespaceForUri | undefined;
+
+function getDefaultNamespaceForUri(): NamespaceForUri {
+	if (!defaultNamespaceForUri) {
+		const { namespaceForUriString } =
+			require("./namespacePath") as typeof import("./namespacePath");
+		defaultNamespaceForUri = namespaceForUriString;
+	}
+	return defaultNamespaceForUri;
+}
+
 /** Workspace-relative folder parts + filename (ADR-0007). */
-export function fileSegmentsFromUri(uri: string): string[] {
-	const ns = namespaceForUriString(uri);
+export function fileSegmentsFromUri(
+	uri: string,
+	namespaceForUri: NamespaceForUri = getDefaultNamespaceForUri(),
+): string[] {
+	const ns = namespaceForUri(uri);
 	const parts =
 		ns.folder === "."
 			? []

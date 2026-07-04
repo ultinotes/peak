@@ -8,6 +8,7 @@ import type {
 } from "../domain/symbol";
 import type {
 	CallHierarchyPort,
+	CursorContext,
 	DefinitionPort,
 	DependencyGraphPort,
 	ImplementationGraphPort,
@@ -15,9 +16,8 @@ import type {
 	PeakViewTab,
 	ReferenceGraphPort,
 	TypeHierarchyPort,
-	CursorContext,
 } from "../adapters/ports";
-import { UnderstandService } from "../services/understandService";
+import { UnderstandService } from "./understandService";
 
 class MockViewHost implements PeakViewHost {
 	lastTabs: PeakViewTab[] = [];
@@ -122,8 +122,11 @@ suite("UnderstandService router", () => {
 		const host = new MockViewHost();
 		const callGraph: CallHierarchyGraph = {
 			rootId: "r",
-			nodes: [{ id: "r", label: "fn", isRoot: true }],
-			edges: [],
+			nodes: [
+				{ id: "r", label: "fn", isRoot: true },
+				{ id: "c", label: "caller" },
+			],
+			edges: [{ from: "c", to: "r", label: "calls" }],
 		};
 		const service = createService(host, {
 			call: new MockCallHierarchy(callGraph),
@@ -138,13 +141,19 @@ suite("UnderstandService router", () => {
 		const host = new MockViewHost();
 		const callGraph: CallHierarchyGraph = {
 			rootId: "r",
-			nodes: [{ id: "r", label: "fn", isRoot: true }],
-			edges: [],
+			nodes: [
+				{ id: "r", label: "fn", isRoot: true },
+				{ id: "c", label: "caller" },
+			],
+			edges: [{ from: "c", to: "r", label: "calls" }],
 		};
 		const typeGraph: TypeHierarchyGraph = {
 			rootId: "t",
-			nodes: [{ id: "t", label: "MyType", isRoot: true }],
-			edges: [],
+			nodes: [
+				{ id: "t", label: "MyType", isRoot: true },
+				{ id: "base", label: "Base" },
+			],
+			edges: [{ from: "base", to: "t", label: "extends" }],
 		};
 		const service = createService(host, {
 			call: new MockCallHierarchy(callGraph),
@@ -160,8 +169,11 @@ suite("UnderstandService router", () => {
 		const host = new MockViewHost();
 		const typeGraph: TypeHierarchyGraph = {
 			rootId: "t",
-			nodes: [{ id: "t", label: "MyType", isRoot: true }],
-			edges: [],
+			nodes: [
+				{ id: "t", label: "MyType", isRoot: true },
+				{ id: "base", label: "Base" },
+			],
+			edges: [{ from: "base", to: "t", label: "extends" }],
 		};
 		const service = createService(host, {
 			type: new MockTypeHierarchy(typeGraph),

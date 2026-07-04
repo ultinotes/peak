@@ -1,66 +1,34 @@
 import type { DefinitionPreviewPlacement } from "../../shared/webviewProtocol";
+import { createDefaultSplitterDom, type SplitterDom } from "./splitterDom";
+import {
+	DEFAULT_SPLIT_RATIO,
+	MIN_PANEL_PX,
+	resolveSplitRatioFromPointer,
+} from "./splitterLogic";
 
-export const MIN_PANEL_PX = 120;
-export const DEFAULT_SPLIT_RATIO = 0.5;
-
-function clampSplitRatio(ratio: number, total: number): number {
-	const minRatio = MIN_PANEL_PX / total;
-	return Math.max(minRatio, Math.min(1 - minRatio, ratio));
-}
+export { DEFAULT_SPLIT_RATIO, MIN_PANEL_PX };
 
 export function applySplitSizes(
 	placement: DefinitionPreviewPlacement,
 	splitRatio: number,
 	hasDefinition: boolean,
+	dom: SplitterDom = createDefaultSplitterDom(),
 ): void {
-	const main = document.getElementById("main");
-	const definition = document.getElementById("definition");
-	const splitter = document.getElementById("splitter");
-	if (!main || !definition || !splitter) {
-		return;
-	}
-	splitter.classList.toggle("visible", hasDefinition);
-	if (!hasDefinition) {
-		definition.style.flexBasis = "";
-		definition.style.width = "";
-		definition.style.height = "";
-		return;
-	}
-
-	const mainRect = main.getBoundingClientRect();
-	const isRight = placement === "right";
-	const total = isRight ? mainRect.width : mainRect.height;
-	const splitterSize = isRight ? splitter.offsetWidth : splitter.offsetHeight;
-	const defSize = Math.max(
-		MIN_PANEL_PX,
-		Math.min(total - MIN_PANEL_PX - splitterSize, total * splitRatio),
-	);
-	if (isRight) {
-		definition.style.flexBasis = `${defSize}px`;
-		definition.style.width = `${defSize}px`;
-		definition.style.height = "";
-	} else {
-		definition.style.flexBasis = `${defSize}px`;
-		definition.style.height = `${defSize}px`;
-		definition.style.width = "";
-	}
+	dom.applySplit(placement, splitRatio, hasDefinition);
 }
 
 export interface SplitterController {
 	dispose(): void;
 }
 
-export function setupSplitter(options: {
-	getPlacement: () => DefinitionPreviewPlacement;
-	isDefinitionVisible: () => boolean;
-	onSplitRatioCommit: (ratio: number) => void;
-}): SplitterController {
-	const splitter = document.getElementById("splitter");
-	const main = document.getElementById("main");
-	if (!splitter || !main) {
-		return { dispose: () => undefined };
-	}
-
+export function setupSplitter(
+	options: {
+		getPlacement: () => DefinitionPreviewPlacement;
+		isDefinitionVisible: () => boolean;
+		onSplitRatioCommit: (ratio: number) => void;
+	},
+	dom: SplitterDom = createDefaultSplitterDom(),
+): SplitterController {
 	let dragging = false;
 	let dragRatio: number | undefined;
 
@@ -77,15 +45,19 @@ export function setupSplitter(options: {
 		if (!dragging || !options.isDefinitionVisible()) {
 			return;
 		}
-		const mainRect = main.getBoundingClientRect();
-		const isRight = options.getPlacement() === "right";
-		const total = isRight ? mainRect.width : mainRect.height;
-		const rawRatio = isRight
-			? (mainRect.right - event.clientX) / mainRect.width
-			: (mainRect.bottom - event.clientY) / mainRect.height;
-		const ratio = clampSplitRatio(rawRatio, total);
+		const placement = options.getPlacement();
+		const metrics = dom.readMetrics(placement);
+		if (!metrics) {
+			return;
+		}
+		const ratio = resolveSplitRatioFromPointer(
+			placement,
+			metrics.bounds,
+			event.clientX,
+			event.clientY,
+		);
 		dragRatio = ratio;
-		applySplitSizes(options.getPlacement(), ratio, true);
+		dom.applySplit(placement, ratio, true);
 	};
 
 	const onMouseUp = (): void => {
@@ -99,15 +71,13 @@ export function setupSplitter(options: {
 		dragRatio = undefined;
 	};
 
-	splitter.addEventListener("mousedown", onSplitterMouseDown);
-	window.addEventListener("mousemove", onMouseMove);
-	window.addEventListener("mouseup", onMouseUp);
+	const disposeDrag = dom.onDrag({
+		onMouseDown: onSplitterMouseDown,
+		onMouseMove,
+		onMouseUp,
+	});
 
 	return {
-		dispose: () => {
-			splitter.removeEventListener("mousedown", onSplitterMouseDown);
-			window.removeEventListener("mousemove", onMouseMove);
-			window.removeEventListener("mouseup", onMouseUp);
-		},
+		dispose: disposeDrag,
 	};
 }

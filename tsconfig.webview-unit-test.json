@@ -1,0 +1,16 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"lib": ["ES2022", "DOM"],
+		"rootDir": "src",
+		"outDir": "out"
+	},
+	"include": [
+		"src/shared/webviewProtocol.ts",
+		"src/webview/layout/splitterLogic.ts",
+		"src/webview/layout/splitterDom.ts",
+		"src/webview/layout/splitter.ts",
+		"src/webview/**/*.unit.test.ts"
+	],
+	"exclude": []
+}
