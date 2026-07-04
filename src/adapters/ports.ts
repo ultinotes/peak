@@ -2,11 +2,13 @@ import type {
 	CallHierarchyGraph,
 	DefinitionView,
 	DependencyGraph,
-	HighlightSpan,
 	ImplementationGraph,
 	ReferenceGraph,
 	TypeHierarchyGraph,
 } from "../domain/symbol";
+import type { CursorContext, PeakViewTab } from "../shared/webviewProtocol";
+
+export type { CursorContext, PeakViewTab };
 
 export type DefinitionPreviewPlacement = "bottom" | "right";
 
@@ -172,21 +174,6 @@ export interface ImplementationGraphPort {
 export interface PeakConfigurationPort {
 	updateOnCursorMove(): boolean;
 	definitionPreviewPlacement(): DefinitionPreviewPlacement;
-}
-
-export interface CursorContext {
-	fileSegments: string[];
-	symbolSegments: string[];
-}
-
-export interface PeakViewTab {
-	id: string;
-	label: string;
-	mermaid: string;
-	focusedNodeId?: string;
-	definitionSnippet?: string;
-	definitionLocation?: string;
-	definitionSnippetHighlights?: HighlightSpan[];
 }
 
 export interface PeakViewHost {

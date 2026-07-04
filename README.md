@@ -14,6 +14,11 @@ Whether you are reviewing agentic code or trying to understand a complex codebas
 to understand the underlying structure of the code. Peak helps you with that by visualizing the LSP features that VSCode
 already provides, like **call hierarchy**, **file dependency graphs**, **definition preview**, and more.
 
+<div style="display: flex; flex-direction: row; gap: 10px;">
+  <img src="assets/screen_calls.png" alt="Call hierarchy graph" style="width: 100%;">
+  <!-- <img src="assets/screen_definition.png" alt="Definition preview" style="width: 100%;"> -->
+</div>
+
 ### What else can Peak do?
 - The diagram panel follows your cursor
 - Copy **mermaid** diagram code for the active tab

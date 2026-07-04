@@ -1,0 +1,16 @@
+// F5 runs scripts/dev-host.js — Cursor's extensionHost debugger does not pass
+// --user-data-dir, so --extensionDevelopmentPath is dropped when Cursor is already open.
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Run Extension",
+			"type": "node",
+			"request": "launch",
+			"program": "${workspaceFolder}/scripts/dev-host.js",
+			"cwd": "${workspaceFolder}",
+			"preLaunchTask": "npm: compile",
+			"console": "integratedTerminal"
+		}
+	]
+}

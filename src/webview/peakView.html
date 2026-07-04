@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8" />
-	<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src {{cspSource}} 'unsafe-inline'; script-src 'nonce-{{nonce}}' {{cspSource}};" />
+	<meta http-equiv="Content-Security-Policy"
+		content="default-src 'none'; style-src {{cspSource}} 'unsafe-inline'; script-src 'nonce-{{nonce}}' {{cspSource}};" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Peak understand</title>
 	<style>
@@ -12,14 +14,28 @@
 			font-family: var(--vscode-font-family);
 			font-size: var(--vscode-font-size);
 		}
+
 		body {
 			margin: 0;
 			padding: 0;
 			display: flex;
 			flex-direction: column;
+			justify-content: stretch;
 			height: 100vh;
 			box-sizing: border-box;
 		}
+
+		#root {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			justify-content: stretch;
+		}
+
+		#main {
+			flex: 1;
+		}
+
 		.tab-bar {
 			display: flex;
 			flex-shrink: 0;
@@ -28,11 +44,13 @@
 			overflow-x: auto;
 			overflow-y: hidden;
 		}
+
 		.tabs {
 			display: flex;
 			flex-wrap: nowrap;
 			min-width: 0;
 		}
+
 		.tab {
 			display: inline-flex;
 			align-items: center;
@@ -49,19 +67,23 @@
 			white-space: nowrap;
 			flex-shrink: 0;
 		}
+
 		.tab:hover {
 			background: var(--vscode-tab-hoverBackground, var(--vscode-tab-inactiveBackground));
 			color: var(--vscode-tab-activeForeground, var(--vscode-foreground));
 		}
+
 		.tab.active {
 			background: var(--vscode-tab-activeBackground, var(--vscode-editor-background));
 			color: var(--vscode-tab-activeForeground, var(--vscode-foreground));
 			border-top-color: var(--vscode-tab-activeBorderTop, var(--vscode-focusBorder, #007acc));
 		}
+
 		.tab svg {
 			flex-shrink: 0;
 			opacity: 0.85;
 		}
+
 		.action-bar {
 			display: flex;
 			justify-content: space-between;
@@ -73,6 +95,7 @@
 			flex-shrink: 0;
 			background: var(--vscode-tab-inactiveBackground, var(--vscode-editor-background));
 		}
+
 		.cursor-breadcrumb {
 			flex: 1;
 			min-width: 0;
@@ -84,30 +107,34 @@
 			color: var(--vscode-breadcrumb-foreground, var(--vscode-descriptionForeground));
 			font-size: 0.9em;
 		}
+
 		.cursor-breadcrumb:empty {
 			display: none;
 		}
+
 		.cursor-breadcrumb-segment {
 			flex-shrink: 0;
 		}
+
 		.cursor-breadcrumb-segment.focus {
-			color: var(
-				--vscode-breadcrumb-activeSelectionForeground,
-				var(--vscode-breadcrumb-focusForeground, var(--vscode-foreground))
-			);
+			color: var(--vscode-breadcrumb-activeSelectionForeground,
+					var(--vscode-breadcrumb-focusForeground, var(--vscode-foreground)));
 		}
+
 		.cursor-breadcrumb-sep {
 			flex-shrink: 0;
 			opacity: 0.65;
 			padding: 0 4px;
 			user-select: none;
 		}
+
 		.action-bar-actions {
 			display: flex;
 			align-items: center;
 			gap: 4px;
 			flex-shrink: 0;
 		}
+
 		.icon-btn {
 			display: inline-flex;
 			align-items: center;
@@ -122,25 +149,31 @@
 			cursor: pointer;
 			flex-shrink: 0;
 		}
+
 		.icon-btn:hover:not(:disabled) {
 			background: var(--vscode-toolbar-hoverBackground, rgba(90, 93, 94, 0.31));
 		}
+
 		.icon-btn:disabled {
 			opacity: 0.4;
 			cursor: default;
 		}
+
 		.icon-btn.hidden {
 			display: none;
 		}
+
 		.icon-btn svg {
 			display: block;
 		}
+
 		.zoom-reset-btn {
 			width: auto;
 			min-width: 48px;
 			padding: 0 8px;
 			font-size: 0.85em;
 		}
+
 		.copy-btn {
 			display: inline-flex;
 			align-items: center;
@@ -155,20 +188,26 @@
 			cursor: pointer;
 			flex-shrink: 0;
 		}
+
 		.copy-btn:hover {
 			background: var(--vscode-button-hoverBackground);
 		}
+
 		.main {
 			display: flex;
 			flex: 1;
 			min-height: 0;
+			height: 100%;
 		}
+
 		.main.layout-right {
 			flex-direction: row;
 		}
+
 		.main.layout-bottom {
 			flex-direction: column;
 		}
+
 		#diagramViewport {
 			position: relative;
 			flex: 1 1 auto;
@@ -180,9 +219,11 @@
 			align-items: center;
 			justify-content: center;
 		}
+
 		#diagramViewport.panning {
 			cursor: grabbing;
 		}
+
 		#diagramContent {
 			transform-origin: center center;
 			padding: 16px;
@@ -194,13 +235,16 @@
 			align-items: center;
 			height: fit-content;
 		}
+
 		#diagramContent svg {
 			display: block;
 			max-width: none;
 		}
+
 		#diagramContent.has-diagram svg {
 			min-width: 1px;
 		}
+
 		.diagram-zoom-overlay {
 			position: absolute;
 			top: 8px;
@@ -217,9 +261,11 @@
 			font-size: 0.85em;
 			pointer-events: auto;
 		}
+
 		.diagram-zoom-overlay.hidden {
 			display: none;
 		}
+
 		.diagram-zoom-overlay .zoom-label {
 			min-width: 44px;
 			text-align: center;
@@ -233,31 +279,38 @@
 			font: inherit;
 			border-radius: 2px;
 		}
+
 		.diagram-zoom-overlay .zoom-label:hover {
 			background: var(--vscode-toolbar-hoverBackground, rgba(90, 93, 94, 0.31));
 		}
+
 		.diagram-zoom-overlay .icon-btn {
 			width: 24px;
 			height: 24px;
 		}
+
 		#splitter {
 			display: none;
 			flex-shrink: 0;
 			background: var(--vscode-panel-border, #444);
 			z-index: 1;
 		}
+
 		.main.layout-right #splitter {
 			width: 4px;
 			cursor: col-resize;
 		}
+
 		.main.layout-bottom #splitter {
 			height: 4px;
 			cursor: row-resize;
 		}
+
 		.main.layout-right #splitter.visible,
 		.main.layout-bottom #splitter.visible {
 			display: block;
 		}
+
 		#definition {
 			display: none;
 			flex-direction: column;
@@ -266,15 +319,19 @@
 			min-height: 0;
 			background: var(--vscode-tab-inactiveBackground, var(--vscode-editor-background));
 		}
+
 		.main.layout-right #definition {
 			border-left: 1px solid var(--vscode-panel-border, #444);
 		}
+
 		.main.layout-bottom #definition {
 			border-top: 1px solid var(--vscode-panel-border, #444);
 		}
+
 		#definition.visible {
 			display: flex;
 		}
+
 		#definitionHeader {
 			padding: 8px 12px;
 			font-size: 0.9em;
@@ -282,6 +339,7 @@
 			border-bottom: 1px solid var(--vscode-panel-border, #444);
 			flex-shrink: 0;
 		}
+
 		#definition pre {
 			margin: 0;
 			padding: 12px;
@@ -292,20 +350,25 @@
 			white-space: pre;
 			color: var(--vscode-editor-foreground);
 		}
+
 		#definition pre .token-keyword,
 		#definition pre .token-modifier {
 			color: var(--vscode-symbolIcon-keywordForeground, var(--vscode-editor-foreground));
 		}
+
 		#definition pre .token-string {
 			color: var(--vscode-symbolIcon-stringForeground, var(--vscode-editor-foreground));
 		}
+
 		#definition pre .token-comment {
 			color: var(--vscode-editorIndentGuide-activeBackground, var(--vscode-descriptionForeground));
 			font-style: italic;
 		}
+
 		#definition pre .token-number {
 			color: var(--vscode-symbolIcon-numberForeground, var(--vscode-editor-foreground));
 		}
+
 		#definition pre .token-type,
 		#definition pre .token-class,
 		#definition pre .token-interface,
@@ -314,33 +377,41 @@
 		#definition pre .token-typeParameter {
 			color: var(--vscode-symbolIcon-classForeground, var(--vscode-editor-foreground));
 		}
+
 		#definition pre .token-function,
 		#definition pre .token-method {
 			color: var(--vscode-symbolIcon-functionForeground, var(--vscode-editor-foreground));
 		}
+
 		#definition pre .token-variable,
 		#definition pre .token-parameter {
 			color: var(--vscode-symbolIcon-variableForeground, var(--vscode-editor-foreground));
 		}
+
 		#definition pre .token-property,
 		#definition pre .token-member {
 			color: var(--vscode-symbolIcon-propertyForeground, var(--vscode-editor-foreground));
 		}
+
 		#definition pre .token-namespace,
 		#definition pre .token-module {
 			color: var(--vscode-symbolIcon-namespaceForeground, var(--vscode-editor-foreground));
 		}
+
 		#definition pre .token-enumMember {
 			color: var(--vscode-symbolIcon-enumeratorMemberForeground, var(--vscode-editor-foreground));
 		}
+
 		#definition pre .token-operator,
 		#definition pre .token-macro {
 			color: var(--vscode-editor-foreground);
 		}
+
 		.error {
 			color: var(--vscode-errorForeground);
 			padding: 16px;
 		}
+
 		.diagram-modal {
 			display: none;
 			position: fixed;
@@ -348,15 +419,18 @@
 			z-index: 1000;
 			flex-direction: column;
 		}
+
 		.diagram-modal.open {
 			display: flex;
 		}
+
 		.diagram-modal-backdrop {
 			position: absolute;
 			inset: 0;
 			background: var(--vscode-editor-background);
 			z-index: 0;
 		}
+
 		.diagram-modal-header {
 			position: relative;
 			display: flex;
@@ -368,9 +442,11 @@
 			flex-shrink: 0;
 			z-index: 2;
 		}
+
 		.diagram-modal-header .spacer {
 			flex: 1;
 		}
+
 		.diagram-modal-viewport {
 			position: relative;
 			flex: 1;
@@ -382,9 +458,11 @@
 			justify-content: center;
 			min-height: 0;
 		}
+
 		.diagram-modal-viewport.panning {
 			cursor: grabbing;
 		}
+
 		.diagram-modal-content {
 			transform-origin: center center;
 			padding: 24px;
@@ -392,6 +470,7 @@
 			width: fit-content;
 			height: fit-content;
 		}
+
 		.diagram-modal-content svg {
 			max-width: none !important;
 			min-width: 1px;
@@ -399,49 +478,10 @@
 		}
 	</style>
 </head>
+
 <body>
-	<header class="tab-bar">
-		<div class="tabs" id="tabs"></div>
-	</header>
-	<div class="action-bar">
-		<nav class="cursor-breadcrumb" id="cursorBreadcrumb" aria-label="Current symbol"></nav>
-		<div class="action-bar-actions">
-			<button class="icon-btn hidden" id="flipLayoutBtn" type="button" title="Flip definition preview layout" aria-label="Flip definition preview layout"></button>
-			<button class="icon-btn hidden" id="directionBtn" type="button" title="Toggle diagram direction" aria-label="Toggle diagram direction"></button>
-			<button class="icon-btn hidden" id="expandBtn" type="button" title="Expand diagram" aria-label="Expand diagram"></button>
-			<button class="copy-btn" id="copyBtn" type="button" title="Copy diagram code" aria-label="Copy diagram code"></button>
-		</div>
-	</div>
-	<div class="main layout-right" id="main">
-		<div id="diagramViewport">
-			<div class="diagram-zoom-overlay hidden" id="inlineZoomOverlay">
-				<button class="icon-btn" id="inlineZoomOut" type="button" title="Zoom out" aria-label="Zoom out"></button>
-				<button class="zoom-label" id="inlineZoomLabel" type="button" title="Reset zoom">100%</button>
-				<button class="icon-btn" id="inlineZoomIn" type="button" title="Zoom in" aria-label="Zoom in"></button>
-			</div>
-			<div id="diagramContent"></div>
-		</div>
-		<div id="splitter" aria-hidden="true"></div>
-		<div id="definition">
-			<div id="definitionHeader"></div>
-			<pre id="definitionBody"></pre>
-		</div>
-	</div>
-	<div id="diagramModal" class="diagram-modal" role="dialog" aria-modal="true" aria-label="Diagram viewer">
-		<div class="diagram-modal-backdrop" id="diagramModalBackdrop"></div>
-		<div class="diagram-modal-header">
-			<span class="spacer"></span>
-			<button class="icon-btn" id="modalCloseBtn" type="button" title="Close" aria-label="Close"></button>
-		</div>
-		<div class="diagram-modal-viewport" id="diagramModalViewport">
-			<div class="diagram-zoom-overlay hidden" id="modalZoomOverlay">
-				<button class="icon-btn" id="modalZoomOut" type="button" title="Zoom out" aria-label="Zoom out"></button>
-				<button class="zoom-label" id="modalZoomReset" type="button" title="Reset zoom">100%</button>
-				<button class="icon-btn" id="modalZoomIn" type="button" title="Zoom in" aria-label="Zoom in"></button>
-			</div>
-			<div class="diagram-modal-content" id="diagramModalContent"></div>
-		</div>
-	</div>
+	<div id="root"></div>
 	<script nonce="{{nonce}}" src="{{scriptUri}}"></script>
 </body>
+
 </html>

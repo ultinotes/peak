@@ -51,7 +51,7 @@ async function main() {
 	});
 
 	const webviewCtx = await esbuild.context({
-		entryPoints: ["src/webview/peakView.ts"],
+		entryPoints: ["src/webview/peakView.tsx"],
 		bundle: true,
 		format: "iife",
 		minify: production,
@@ -59,6 +59,8 @@ async function main() {
 		sourcesContent: false,
 		platform: "browser",
 		outfile: "dist/webview/peakView.js",
+		jsx: "automatic",
+		jsxImportSource: "preact",
 		logLevel: "silent",
 		plugins: [esbuildProblemMatcherPlugin],
 	});
